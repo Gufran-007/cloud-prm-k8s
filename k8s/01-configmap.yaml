@@ -1,0 +1,11 @@
+# A ConfigMap holds settings outside the image.
+# Change a value here and restart the pods - no rebuild needed.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloud-prm-config
+  namespace: cloud-prm
+data:
+  APP_N_MACHINES: "3"                              # synthetic VMs to simulate
+  APP_MODELS: "naive,seasonal_naive,ridge,hgb"     # forecasters to train
+  APP_VERSION: "v1"                                # label shown on the web page

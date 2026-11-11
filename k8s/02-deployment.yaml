@@ -1,0 +1,58 @@
+# A Deployment keeps a fixed number of identical pods running.
+# If a pod crashes or a node dies, Kubernetes starts a replacement.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-prm
+  namespace: cloud-prm
+  labels:
+    app: cloud-prm
+spec:
+  replicas: 2                        # two copies of the app
+  selector:
+    matchLabels:
+      app: cloud-prm                 # manage pods carrying this label
+  template:                          # the pod blueprint
+    metadata:
+      labels:
+        app: cloud-prm
+    spec:
+      containers:
+        - name: cloud-prm
+          image: REPLACE_WITH_ACR.azurecr.io/cloud-prm:v1   # set in Step 9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: cloud-prm-config   # loads APP_* settings as env vars
+          env:                           # Downward API: tell the app who it is
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            requests:                    # guaranteed share, used for scheduling
+              cpu: 250m                  # a quarter of one CPU core
+              memory: 512Mi
+            limits:                      # hard ceiling
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:                # "send me traffic?" - yes once results exist
+            httpGet:
+              path: /readyz
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 36         # allow up to ~3 minutes of start-up
+          livenessProbe:                 # "still alive?" - restart the pod if not
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3

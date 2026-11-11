@@ -1,0 +1,8 @@
+# A namespace is a separate "folder" inside the cluster.
+# Everything for this project lives in cloud-prm, so it is easy to list and delete.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloud-prm
+  labels:
+    project: cloud-prm

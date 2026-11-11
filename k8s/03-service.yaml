@@ -1,0 +1,15 @@
+# A Service gives the pods one stable address and load-balances across them.
+# type LoadBalancer asks Azure for a public IP address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud-prm-svc
+  namespace: cloud-prm
+spec:
+  type: LoadBalancer
+  selector:
+    app: cloud-prm               # send traffic to pods with this label
+  ports:
+    - name: http
+      port: 80                   # port users connect to
+      targetPort: 8000           # port the container listens on
