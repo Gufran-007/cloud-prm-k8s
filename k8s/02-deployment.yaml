@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: cloud-prm
-          image: REPLACE_WITH_ACR.azurecr.io/cloud-prm:v1   # set in Step 9
+          image: cloudprm11353.azurecr.io/cloud-prm:v1   # set in Step 9
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
